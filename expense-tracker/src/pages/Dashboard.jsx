@@ -66,8 +66,23 @@ const COLORS = ["#22c55e", "#ef4444"];
               </div>
             </div>
 
-            <div className="flex justify-center">
-              <div className="w-32 h-32 rounded-full border-[12px] border-green-400 border-t-red-400"></div>
+            <div style={{ width: "100%", height: 200 }}>
+              <ResponsiveContainer>
+                <PieChart>
+                  <Pie
+                    data={data}
+                    dataKey="value"
+                    innerRadius={50}
+                    outerRadius={70}
+                    paddingAngle={2}
+                  >
+                    {data.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index]} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
             </div>
           </div>
 
