@@ -1,0 +1,21 @@
+{
+  "dependencies": {
+    "@tailwindcss/cli": "^4.2.4",
+    "@tailwindcss/vite": "^4.2.4",
+    "recharts": "^3.8.1",
+    "tailwindcss": "^4.2.4"
+  },
+  "name": "web-dev-capstone-sem2",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}
