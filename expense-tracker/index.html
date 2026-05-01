@@ -1,14 +1,503 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>expense-tracker</title>
-    <link href="./output.css" rel="stylesheet">
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Tracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            border-radius: 24px;
+            padding: 2.5rem;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        }
+
+        h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 2rem;
+        }
+
+        .financial-summary {
+            background: #f7fafc;
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .summary-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 1.25rem;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+
+        .summary-card {
+            text-align: center;
+        }
+
+        .summary-label {
+            font-size: 0.875rem;
+            color: #718096;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .summary-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .balance-value {
+            color: #1a202c;
+        }
+
+        .income-value {
+            color: #48bb78;
+        }
+
+        .expense-value {
+            color: #f56565;
+        }
+
+        .chart-container {
+            display: flex;
+            justify-content: center;
+            margin: 2rem 0;
+        }
+
+        .donut-chart {
+            position: relative;
+            width: 200px;
+            height: 200px;
+        }
+
+        .chart-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .chart-percentage {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1a202c;
+        }
+
+        .chart-label {
+            font-size: 0.75rem;
+            color: #718096;
+            margin-top: 0.25rem;
+        }
+
+        .add-transaction {
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 1rem;
+        }
+
+        .input-group {
+            margin-bottom: 1rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 0.9375rem;
+            font-family: 'DM Sans', sans-serif;
+            transition: all 0.2s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        input::placeholder {
+            color: #a0aec0;
+        }
+
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .btn {
+            padding: 0.875rem 1.5rem;
+            border: none;
+            border-radius: 12px;
+            font-size: 0.9375rem;
+            font-weight: 600;
+            font-family: 'DM Sans', sans-serif;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-income {
+            background: #f0fff4;
+            color: #38a169;
+            border: 2px solid #c6f6d5;
+        }
+
+        .btn-income:hover {
+            background: #c6f6d5;
+            transform: translateY(-2px);
+        }
+
+        .btn-expense {
+            background: #fff5f5;
+            color: #e53e3e;
+            border: 2px solid #fed7d7;
+        }
+
+        .btn-expense:hover {
+            background: #fed7d7;
+            transform: translateY(-2px);
+        }
+
+        .btn-add {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 100%;
+        }
+
+        .btn-add:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-add:active {
+            transform: translateY(0);
+        }
+
+        .recent-transactions {
+            margin-top: 2rem;
+        }
+
+        .transaction-list {
+            background: #f7fafc;
+            border-radius: 16px;
+            padding: 1rem;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .transaction-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 0.75rem;
+            transition: all 0.2s;
+        }
+
+        .transaction-item:hover {
+            transform: translateX(4px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .transaction-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .transaction-desc {
+            font-weight: 500;
+            color: #2d3748;
+        }
+
+        .transaction-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .transaction-amount {
+            font-weight: 700;
+            font-size: 1.0625rem;
+        }
+
+        .amount-positive {
+            color: #48bb78;
+        }
+
+        .amount-negative {
+            color: #f56565;
+        }
+
+        .btn-delete {
+            background: #fff5f5;
+            color: #e53e3e;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.125rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .btn-delete:hover {
+            background: #fed7d7;
+            transform: scale(1.1);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: #a0aec0;
+        }
+
+        /* Scrollbar styling */
+        .transaction-list::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .transaction-list::-webkit-scrollbar-track {
+            background: #edf2f7;
+            border-radius: 10px;
+        }
+
+        .transaction-list::-webkit-scrollbar-thumb {
+            background: #cbd5e0;
+            border-radius: 10px;
+        }
+
+        .transaction-list::-webkit-scrollbar-thumb:hover {
+            background: #a0aec0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Expense Tracker</h1>
+
+        <div class="financial-summary">
+            <div class="summary-title">Financial Summary</div>
+            <div class="summary-grid">
+                <div class="summary-card">
+                    <div class="summary-label">Balance</div>
+                    <div class="summary-value balance-value" id="balance">₹75000</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-label">Income</div>
+                    <div class="summary-value income-value" id="income">₹100000</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-label">Expenses</div>
+                    <div class="summary-value expense-value" id="expenses">₹25000</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <div class="donut-chart">
+                <svg width="200" height="200" viewBox="0 0 200 200">
+                    <circle
+                        cx="100"
+                        cy="100"
+                        r="70"
+                        fill="none"
+                        stroke="#48bb78"
+                        stroke-width="28"
+                        stroke-dasharray="439.82"
+                        stroke-dashoffset="0"
+                        id="incomeArc"
+                        transform="rotate(-90 100 100)"
+                    />
+                    <circle
+                        cx="100"
+                        cy="100"
+                        r="70"
+                        fill="none"
+                        stroke="#f56565"
+                        stroke-width="28"
+                        stroke-dasharray="439.82"
+                        stroke-dashoffset="329.87"
+                        id="expenseArc"
+                        transform="rotate(-90 100 100)"
+                    />
+                </svg>
+                <div class="chart-center">
+                    <div class="chart-percentage" id="expensePercentage">25%</div>
+                    <div class="chart-label">Expenses</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="add-transaction">
+            <div class="section-title">Add Transaction</div>
+            <div class="input-group">
+                <input type="text" id="description" placeholder="Description">
+            </div>
+            <div class="input-group">
+                <input type="number" id="amount" placeholder="Amount">
+            </div>
+            <div class="button-group">
+                <button class="btn btn-income" id="incomeBtn">Income</button>
+                <button class="btn btn-expense" id="expenseBtn">Expense</button>
+            </div>
+            <button class="btn btn-add" id="addBtn">+ Add Transaction</button>
+        </div>
+
+        <div class="recent-transactions">
+            <div class="section-title">Recent Transactions</div>
+            <div class="transaction-list" id="transactionList">
+                <div class="transaction-item">
+                    <div class="transaction-desc">Salary</div>
+                    <div class="transaction-right">
+                        <div class="transaction-amount amount-positive">+₹100000</div>
+                        <button class="btn-delete" onclick="deleteTransaction(0)">×</button>
+                    </div>
+                </div>
+                <div class="transaction-item">
+                    <div class="transaction-desc">Expense</div>
+                    <div class="transaction-right">
+                        <div class="transaction-amount amount-negative">-₹25000</div>
+                        <button class="btn-delete" onclick="deleteTransaction(1)">×</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let transactions = [
+            { description: 'Salary', amount: 100000, type: 'income' },
+            { description: 'Expense', amount: 25000, type: 'expense' }
+        ];
+
+        let selectedType = 'income';
+
+        const incomeBtn = document.getElementById('incomeBtn');
+        const expenseBtn = document.getElementById('expenseBtn');
+        const addBtn = document.getElementById('addBtn');
+        const descInput = document.getElementById('description');
+        const amountInput = document.getElementById('amount');
+
+        incomeBtn.addEventListener('click', () => {
+            selectedType = 'income';
+            incomeBtn.style.background = '#48bb78';
+            incomeBtn.style.color = 'white';
+            incomeBtn.style.borderColor = '#48bb78';
+            expenseBtn.style.background = '#fff5f5';
+            expenseBtn.style.color = '#e53e3e';
+            expenseBtn.style.borderColor = '#fed7d7';
+        });
+
+        expenseBtn.addEventListener('click', () => {
+            selectedType = 'expense';
+            expenseBtn.style.background = '#f56565';
+            expenseBtn.style.color = 'white';
+            expenseBtn.style.borderColor = '#f56565';
+            incomeBtn.style.background = '#f0fff4';
+            incomeBtn.style.color = '#38a169';
+            incomeBtn.style.borderColor = '#c6f6d5';
+        });
+
+        addBtn.addEventListener('click', () => {
+            const description = descInput.value.trim();
+            const amount = parseFloat(amountInput.value);
+
+            if (description && amount > 0) {
+                transactions.unshift({ description, amount, type: selectedType });
+                descInput.value = '';
+                amountInput.value = '';
+                updateUI();
+            }
+        });
+
+        function deleteTransaction(index) {
+            transactions.splice(index, 1);
+            updateUI();
+        }
+
+        function updateUI() {
+            let totalIncome = 0;
+            let totalExpense = 0;
+
+            transactions.forEach(t => {
+                if (t.type === 'income') {
+                    totalIncome += t.amount;
+                } else {
+                    totalExpense += t.amount;
+                }
+            });
+
+            const balance = totalIncome - totalExpense;
+
+            document.getElementById('balance').textContent = `₹${balance.toLocaleString('en-IN')}`;
+            document.getElementById('income').textContent = `₹${totalIncome.toLocaleString('en-IN')}`;
+            document.getElementById('expenses').textContent = `₹${totalExpense.toLocaleString('en-IN')}`;
+
+            // Update chart
+            const total = totalIncome;
+            const expensePercentage = total > 0 ? (totalExpense / total) * 100 : 0;
+            const circumference = 2 * Math.PI * 70;
+            const expenseOffset = circumference - (circumference * totalExpense / total);
+
+            document.getElementById('expenseArc').style.strokeDashoffset = expenseOffset;
+            document.getElementById('expensePercentage').textContent = `${Math.round(expensePercentage)}%`;
+
+            // Update transaction list
+            const listHtml = transactions.map((t, i) => `
+                <div class="transaction-item">
+                    <div class="transaction-desc">${t.description}</div>
+                    <div class="transaction-right">
+                        <div class="transaction-amount ${t.type === 'income' ? 'amount-positive' : 'amount-negative'}">
+                            ${t.type === 'income' ? '+' : '-'}₹${t.amount.toLocaleString('en-IN')}
+                        </div>
+                        <button class="btn-delete" onclick="deleteTransaction(${i})">×</button>
+                    </div>
+                </div>
+            `).join('');
+
+            document.getElementById('transactionList').innerHTML = listHtml || '<div class="empty-state">No transactions yet</div>';
+        }
+
+        updateUI();
+    </script>
+</body>
 </html>
